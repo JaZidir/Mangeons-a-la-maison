@@ -265,7 +265,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
   function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
   function dkey(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-  function monday(offset){ const d=new Date(); d.setHours(0,0,0,0); const w=(d.getDay()+6)%7; d.setDate(d.getDate()-w+offset*7); return d; }
+  function monday(offset){ const d=new Date(); d.setHours(0,0,0,0); const w=(d.getDay()+3)%7; d.setDate(d.getDate()-w+offset*7); return d; }
   function weekDates(offset){ const m=monday(offset); return Array.from({length:7},(_,i)=>{const d=new Date(m); d.setDate(m.getDate()+i); return d;}); }
   function weekLabel(offset){ const ds=weekDates(offset); const a=ds[0], b=ds[6]; return "Du "+a.getDate()+" "+MONTHS[a.getMonth()]+" au "+b.getDate()+" "+MONTHS[b.getMonth()]; }
   function sortedRecipes(){ return Object.entries(S.recipes).map(([id,r])=>({id,...r})).sort((a,b)=>(a.name||"").localeCompare(b.name||"","fr")); }
@@ -438,7 +438,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
     $("#week-title").textContent=weekLabel(S.weekOffset);
     const today=dkey(new Date());
     $("#days").innerHTML=weekDates(S.weekOffset).map((d,i)=>{ const k=dkey(d); const items=(S.plan.days[k]||[]).filter(e=>S.recipes[e.r]);
-      return `<div class="day ${k===today?"today":""}"><header><span class="dname">${DAYS[i]}</span><span class="ddate">${d.getDate()} ${MONTHS[d.getMonth()]}</span></header>
+      return `<div class="day ${k===today?"today":""}"><header><span class="dname">${DAYS[(d.getDay()+6)%7]}</span><span class="ddate">${d.getDate()} ${MONTHS[d.getMonth()]}</span></header>
       ${items.length?`<ul>${items.map(e=>`<li><button class="open" data-r="${e.r}">${esc(S.recipes[e.r].name)}</button><button class="icon-btn rm" data-d="${k}" data-k="${e.k}" aria-label="Retirer ${esc(S.recipes[e.r].name)}">✕</button></li>`).join("")}</ul>`:""}
       <button class="add" data-d="${k}">+ Ajouter</button></div>`; }).join("");
     $("#days").querySelectorAll("button.open").forEach(b=>b.onclick=()=>openView(b.dataset.r));
